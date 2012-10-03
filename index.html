@@ -29,8 +29,8 @@ var width = 960,
     height = 500,
     radius = 10;
 
-var p0 = [200, 200, 100],
-    p1 = [760, 400, 200];
+var p0 = [250, 200, 60],
+    p1 = [560, 300, 120];
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -48,7 +48,7 @@ svg.selectAll("circle")
     .attr("class", function(d, i) { return i ? "end" : "start"; })
     .attr("cx", function(d) { return d[0]; })
     .attr("cy", function(d) { return d[1]; })
-    .attr("r", function(d) { return d[2] / 2 * height / width - 1; });
+    .attr("r", function(d) { return d[2] / 2 - .5; });
 
 function transition(mesh, start, end) {
   var center = [width / 2, height / 2],
@@ -56,7 +56,7 @@ function transition(mesh, start, end) {
 
   svg.transition().duration(i.duration * 4).attrTween("transform", function() {
     return function(t) {
-      var p = i(t), k = width / p[2];
+      var p = i(t), k = height / p[2];
       return "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
     };
   });
