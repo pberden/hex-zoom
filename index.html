@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  margin: 40px auto;
+  width: 960px;
+}
+
+.mesh {
+  fill: none;
+  stroke: #000;
+  stroke-width: .25px;
+}
+
+.start {
+  fill: none;
+  stroke: brown;
+}
+
+.end {
+  fill: none;
+  stroke: steelblue;
+}
+
+</style>
+<body>
+<script src="http://d3js.org/d3.v2.min.js?2.10.1"></script>
+<script src="https://raw.github.com/d3/d3-plugins/master/hexbin/hexbin.js"></script>
+<script src="https://raw.github.com/d3/d3-plugins/master/interpolate-zoom/interpolate-zoom.js"></script>
+<script>
+
+var width = 960,
+    height = 500,
+    radius = 10;
+
+var p0 = [200, 200, 100],
+    p1 = [760, 400, 200];
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g");
+
+svg.append("path")
+    .attr("class", "mesh")
+    .attr("d", d3.hexbin.mesh(width, height, radius))
+    .call(transition, p0, p1);
+
+svg.selectAll("circle")
+    .data([p0, p1])
+  .enter().append("circle")
+    .attr("class", function(d, i) { return i ? "end" : "start"; })
+    .attr("cx", function(d) { return d[0]; })
+    .attr("cy", function(d) { return d[1]; })
+    .attr("r", function(d) { return d[2] / 2 * height / width - 1; });
+
+function transition(mesh, start, end) {
+  var center = [width / 2, height / 2],
+      i = d3.interpolateZoom(start, end);
+
+  svg.transition().duration(i.duration * 4).attrTween("transform", function() {
+    return function(t) {
+      var p = i(t), k = width / p[2];
+      return "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
+    };
+  });
+}
+
+</script>
