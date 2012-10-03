@@ -54,12 +54,17 @@ function transition(mesh, start, end) {
   var center = [width / 2, height / 2],
       i = d3.interpolateZoom(start, end);
 
-  svg.transition().duration(i.duration * 4).attrTween("transform", function() {
+  svg.transition()
+      .duration(i.duration * 4)
+      .attrTween("transform", transformTween)
+      .each("end", function() { d3.select(this).call(transition, end, start); });
+
+  function transformTween() {
     return function(t) {
       var p = i(t), k = height / p[2];
       return "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
     };
-  });
+  }
 }
 
 </script>
