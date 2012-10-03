@@ -35,12 +35,12 @@ var p0 = [250, 200, 60],
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
-  .append("g");
+  .append("g")
+    .call(transition, p0, p1);
 
 svg.append("path")
     .attr("class", "mesh")
-    .attr("d", d3.hexbin.mesh(width, height, radius))
-    .call(transition, p0, p1);
+    .attr("d", d3.hexbin.mesh(width, height, radius));
 
 svg.selectAll("circle")
     .data([p0, p1])
@@ -50,20 +50,22 @@ svg.selectAll("circle")
     .attr("cy", function(d) { return d[1]; })
     .attr("r", function(d) { return d[2] / 2 - .5; });
 
-function transition(mesh, start, end) {
+function transition(svg, start, end) {
   var center = [width / 2, height / 2],
-      i = d3.interpolateZoom(start, end);
+      i = d3.interpolateZoom(start, end),
+      k = height / start[2];
 
-  svg.transition()
+  svg
+      .attr("transform", transform(start))
+    .transition()
+      .delay(250)
       .duration(i.duration * 2)
-      .attrTween("transform", transformTween)
+      .attrTween("transform", function() { return function(t) { return transform(i(t)); }; })
       .each("end", function() { d3.select(this).call(transition, end, start); });
 
-  function transformTween() {
-    return function(t) {
-      var p = i(t), k = height / p[2];
-      return "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
-    };
+  function transform(p) {
+    var k = height / p[2];
+    return "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
   }
 }
 
