@@ -52,8 +52,7 @@ svg.selectAll("circle")
 
 function transition(svg, start, end) {
   var center = [width / 2, height / 2],
-      i = d3.interpolateZoom(start, end),
-      k = height / start[2];
+      i = d3.interpolateZoom(start, end);
 
   svg
       .attr("transform", transform(start))
