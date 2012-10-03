@@ -55,7 +55,7 @@ function transition(mesh, start, end) {
       i = d3.interpolateZoom(start, end);
 
   svg.transition()
-      .duration(i.duration * 4)
+      .duration(i.duration * 2)
       .attrTween("transform", transformTween)
       .each("end", function() { d3.select(this).call(transition, end, start); });
 
