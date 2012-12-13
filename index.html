@@ -20,8 +20,8 @@
 
 </style>
 <body>
-<script src="http://d3js.org/d3.v2.min.js?2.10.1"></script>
-<script src="https://raw.github.com/d3/d3-plugins/master/hexbin/hexbin.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/d3.hexbin.v0.min.js"></script>
 <script src="https://raw.github.com/d3/d3-plugins/master/interpolate-zoom/interpolate-zoom.js"></script>
 <script>
 
@@ -40,7 +40,10 @@ var svg = d3.select("body").append("svg")
 
 svg.append("path")
     .attr("class", "mesh")
-    .attr("d", d3.hexbin.mesh(width, height, radius));
+    .attr("d", d3.hexbin()
+      .size([width, height])
+      .radius(radius)
+      .mesh);
 
 svg.selectAll("circle")
     .data([p0, p1])
