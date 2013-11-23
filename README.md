@@ -1,1 +1,1 @@
-A demo of the [d3.interpolateZoom plugin](https://github.com/d3/d3-plugins/tree/master/interpolate-zoom).
+A demo of [d3.interpolateZoom](https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_interpolateZoom). Added in release 3.3, zoom interpolation is now supported automatically for the zoom behavior. See also the [zoom transitions](/mbostock/6238040) and [map zooming](/mbostock/6242308) examples.
