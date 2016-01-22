@@ -1,1 +1,1 @@
-A demo of [d3.interpolateZoom](https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_interpolateZoom). Added in release 3.3, zoom interpolation is now supported automatically for the zoom behavior. See also the [zoom transitions](/mbostock/6238040) and [map zooming](/mbostock/6242308) examples.
+Experimenting with hex grids, zoom, and dragable objects.
