@@ -42,7 +42,7 @@ svg {
 var margin = {top: -5, right: -5, bottom: -5, left: -5},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom,
-    radius = 50, // Size of the hex
+    radius = 40, // Size of the hex
     factor = 4; // Factor to enlarge the workpane
 
 var zoom = d3.behavior.zoom()
@@ -76,13 +76,12 @@ var container = svg.append("g");
 
 // Offset all elements
 var offset = container.append("g")
-    .attr("transform", "translate("+(width*(factor-1)/-2)+","+(height*(factor-1)/-2)+")");
+    // .attr("transform", "translate("+(width*(factor-1)/-2)+","+(height*(factor-1)/-2)+")");
 
 offset.append("g")
     .attr("class", "mesh")
   .append("path")
     .attr("class", "mesh")
-    // .attr("transform", "translate("+(width*(factor-1)/-2)+","+(height*(factor-1)/-2)+")")
     .attr("d", d3.hexbin()
       .size([width*factor, height*factor])
       .radius(radius)
@@ -116,7 +115,6 @@ var centers = d3.hexbin()
 
 offset.append("g")
     .attr("class", "centers")
-    // .attr("transform", "translate("+(width*(factor-1)/-2)+","+(height*(factor-1)/-2)+")")
   .selectAll("circle")
     .data(centers)
   .enter().append("circle")
@@ -136,7 +134,11 @@ function dragstarted(d) {
 }
 
 function dragged(d) {
-  d3.select(this).attr("x", d.x = d3.event.x).attr("y", d.y = d3.event.y);
+  d3.select(this)
+    // Divide y by height of the hex (radius * 1.5), then round and multiply again
+    .attr("y", d.y = radius*1.5*Math.round(d3.event.y / (radius*1.5)))
+    // Width of a hex is radius * sqrt(3), repeat as with y
+    .attr("x", d.x = radius*Math.sqrt(3)*Math.round(d3.event.x / (radius*Math.sqrt(3))));
 }
 
 function dragended(d) {
