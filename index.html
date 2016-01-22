@@ -6,22 +6,31 @@ svg {
   margin: auto;
 }
 
-.dot rect {
+.table rect {
   fill: lightsteelblue;
   stroke: steelblue;
   stroke-width: 1.5px;
 }
 
-.dot rect.dragging {
+.table rect.dragging {
   fill: red;
   stroke: brown;
 }
 
-.axis line {
+.mesh {
   fill: none;
-  stroke: #ddd;
-  shape-rendering: crispEdges;
-  vector-effect: non-scaling-stroke;
+  stroke: #000;
+  stroke-width: .25px;
+}
+
+.line {
+  stroke: red;
+  stroke-width: 5px;
+}
+
+.centers {
+  stroke: none;
+  fill: steelblue;
 }
 
 </style>
@@ -66,6 +75,7 @@ var rect = svg.append("rect")
 var container = svg.append("g");
 
 container.append("g")
+    .attr("class", "mesh")
   .append("path")
     .attr("class", "mesh")
     .attr("transform", "translate("+(width*(factor-1)/-2)+","+(height*(factor-1)/-2)+")")
@@ -74,23 +84,43 @@ container.append("g")
       .radius(radius)
       .mesh);
 
-var dot = container.append("g")
-    .attr("class", "dot")
+var table = container.append("g")
+    .attr("class", "table")
   .selectAll("rect")
     .data([p0, p1, p2])
   .enter().append("rect")
-      .attr("width", 80)
-      .attr("height", 80)
-      .attr("x", function(d) { return d.x; })
-      .attr("y", function(d) { return d.y; })
+    .attr("width", 80)
+    .attr("height", 80)
+    .attr("x", function(d) { return d.x; })
+    .attr("y", function(d) { return d.y; })
     .call(drag);
 
+container.append("g")
+    .attr("class", "line")
+  .append("line")
+    .attr("x1", 0)
+    .attr("y1", -width)
+    .attr("x2", 0)
+    .attr("y2", width);
 
-function dottype(d) {
-  d.x = +d.x;
-  d.y = +d.y;
-  return d;
-}
+// For testing purpose, add centers of hex grid
+
+var centers = d3.hexbin()
+      .size([width*factor, height*factor])
+      .radius(radius)
+      .centers();
+
+container.append("g")
+    .attr("class", "centers")
+    .attr("transform", "translate("+(width*(factor-1)/-2)+","+(height*(factor-1)/-2)+")")
+  .selectAll("circle")
+    .data(centers)
+  .enter().append("circle")
+    .attr("cx", function(d) { return d[0]; })
+    .attr("cy", function(d) { return d[1]; })
+    .attr("r", 5)
+    .on("click", function(d) { console.log("x: "+d[0]+" | y: "+d[1])});
+
 
 function zoomed() {
   container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
@@ -106,6 +136,7 @@ function dragged(d) {
 }
 
 function dragended(d) {
+  console.log("x: "+d.x+" | y: "+d.y);
   d3.select(this).classed("dragging", false);
 }
 
