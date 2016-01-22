@@ -74,17 +74,21 @@ var rect = svg.append("rect")
 
 var container = svg.append("g");
 
-container.append("g")
+// Offset all elements
+var offset = container.append("g")
+    .attr("transform", "translate("+(width*(factor-1)/-2)+","+(height*(factor-1)/-2)+")");
+
+offset.append("g")
     .attr("class", "mesh")
   .append("path")
     .attr("class", "mesh")
-    .attr("transform", "translate("+(width*(factor-1)/-2)+","+(height*(factor-1)/-2)+")")
+    // .attr("transform", "translate("+(width*(factor-1)/-2)+","+(height*(factor-1)/-2)+")")
     .attr("d", d3.hexbin()
       .size([width*factor, height*factor])
       .radius(radius)
       .mesh);
 
-var table = container.append("g")
+var table = offset.append("g")
     .attr("class", "table")
   .selectAll("rect")
     .data([p0, p1, p2])
@@ -95,7 +99,7 @@ var table = container.append("g")
     .attr("y", function(d) { return d.y; })
     .call(drag);
 
-container.append("g")
+offset.append("g")
     .attr("class", "line")
   .append("line")
     .attr("x1", 0)
@@ -110,9 +114,9 @@ var centers = d3.hexbin()
       .radius(radius)
       .centers();
 
-container.append("g")
+offset.append("g")
     .attr("class", "centers")
-    .attr("transform", "translate("+(width*(factor-1)/-2)+","+(height*(factor-1)/-2)+")")
+    // .attr("transform", "translate("+(width*(factor-1)/-2)+","+(height*(factor-1)/-2)+")")
   .selectAll("circle")
     .data(centers)
   .enter().append("circle")
