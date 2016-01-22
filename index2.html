@@ -24,11 +24,14 @@
 </style>
 <body>
 <script src="//d3js.org/d3.v3.min.js"></script>
+<script src="d3.hexbin.min.js"></script>
 <script>
 
 var margin = {top: -5, right: -5, bottom: -5, left: -5},
     width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 500 - margin.top - margin.bottom,
+    radius = 100, // Size of the hex
+    factor = 4; // Factor to enlarge the workpane
 
 var zoom = d3.behavior.zoom()
     .scaleExtent([1, 10])
@@ -60,24 +63,35 @@ var rect = svg.append("rect")
 var container = svg.append("g");
 
 container.append("g")
-    .attr("class", "x axis")
-  .selectAll("line")
-    .data(d3.range(0, width, 10))
-  .enter().append("line")
-    .attr("x1", function(d) { return d; })
-    .attr("y1", 0)
-    .attr("x2", function(d) { return d; })
-    .attr("y2", height);
+  .append("path")
+    .attr("class", "mesh")
+    .attr("transform", "translate("+(width*(factor-1)/-2)+","+(height*(factor-1)/-2)+")")
+    .attr("d", d3.hexbin()
+      .size([width*factor, height*factor])
+      .radius(radius)
+      .mesh);
 
-container.append("g")
-    .attr("class", "y axis")
-  .selectAll("line")
-    .data(d3.range(0, height, 10))
-  .enter().append("line")
-    .attr("x1", 0)
-    .attr("y1", function(d) { return d; })
-    .attr("x2", width)
-    .attr("y2", function(d) { return d; });
+
+
+// container.append("g")
+//     .attr("class", "x axis")
+//   .selectAll("line")
+//     .data(d3.range(0, width, 10))
+//   .enter().append("line")
+//     .attr("x1", function(d) { return d; })
+//     .attr("y1", 0)
+//     .attr("x2", function(d) { return d; })
+//     .attr("y2", height);
+
+// container.append("g")
+//     .attr("class", "y axis")
+//   .selectAll("line")
+//     .data(d3.range(0, height, 10))
+//   .enter().append("line")
+//     .attr("x1", 0)
+//     .attr("y1", function(d) { return d; })
+//     .attr("x2", width)
+//     .attr("y2", function(d) { return d; });
 
 var dot = container.append("g")
     .attr("class", "dot")
