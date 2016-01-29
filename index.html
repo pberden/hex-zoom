@@ -43,6 +43,10 @@ var margin = {top: -5, right: -5, bottom: -5, left: -5},
     box = 120, // Size of objects
     factor = 4; // Factor to enlarge the workpane
 
+var hex = d3.hexbin()
+      .size([width*factor, height*factor])
+      .radius(radius);
+
 var zoom = d3.behavior.zoom()
     .scaleExtent([0.5, 10])
     .on("zoom", zoomed);
@@ -53,9 +57,10 @@ var drag = d3.behavior.drag()
     .on("drag", dragged)
     .on("dragend", dragended);
 
-var p0 = {x:100, y:80},
-    p1 = {x:380, y:350},
-    p2 = {x:130, y:300};
+var tables = [];
+for(i=0; i<13; i++){
+  tables.push({x:Math.random()*width, y:Math.random()*height})
+}
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -80,15 +85,12 @@ offset.append("g")
     .attr("class", "mesh")
   .append("path")
     .attr("class", "mesh")
-    .attr("d", d3.hexbin()
-      .size([width*factor, height*factor])
-      .radius(radius)
-      .mesh);
+    .attr("d", hex.mesh);
 
 var table = offset.append("g")
     .attr("class", "table")
   .selectAll("rect")
-    .data([p0, p1, p2])
+    .data(tables)
   .enter().append("rect")
     .attr("width", box)
     .attr("height", box)
@@ -96,17 +98,12 @@ var table = offset.append("g")
     .attr("y", function(d) { return d.y; })
     .call(drag);
 
-// For testing purpose, add centers of hex grid
-
-var centers = d3.hexbin()
-      .size([width*factor, height*factor])
-      .radius(radius)
-      .centers();
+// Display centers
 
 offset.append("g")
     .attr("class", "centers")
   .selectAll("circle")
-    .data(centers)
+    .data(hex.centers())
   .enter().append("circle")
     .attr("cx", function(d) { return d[0]; })
     .attr("cy", function(d) { return d[1]; })
