@@ -21,16 +21,13 @@ svg {
   fill: none;
   stroke: #000;
   stroke-width: .25px;
-}
-
-.line {
-  stroke: red;
-  stroke-width: 5px;
+  opacity: 0.5;
 }
 
 .centers {
   stroke: none;
   fill: steelblue;
+  opacity: 0.3;
 }
 
 </style>
@@ -42,7 +39,8 @@ svg {
 var margin = {top: -5, right: -5, bottom: -5, left: -5},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom,
-    radius = 80, // Size of the hex
+    radius = 100, // Size of the hex,
+    box = 120, // Size of objects
     factor = 4; // Factor to enlarge the workpane
 
 var zoom = d3.behavior.zoom()
@@ -92,19 +90,11 @@ var table = offset.append("g")
   .selectAll("rect")
     .data([p0, p1, p2])
   .enter().append("rect")
-    .attr("width", 80)
-    .attr("height", 80)
+    .attr("width", box)
+    .attr("height", box)
     .attr("x", function(d) { return d.x; })
     .attr("y", function(d) { return d.y; })
     .call(drag);
-
-offset.append("g")
-    .attr("class", "line")
-  .append("line")
-    .attr("x1", 0)
-    .attr("y1", -width)
-    .attr("x2", 0)
-    .attr("y2", width);
 
 // For testing purpose, add centers of hex grid
 
@@ -134,15 +124,28 @@ function dragstarted(d) {
 }
 
 function dragged(d) {
-  d3.select(this)
-    // Divide y by height of the hex (radius * 1.5), then round and multiply again
-    .attr("y", d.y = (radius*1.5*Math.round(d3.event.y / (radius*1.5)))-(radius/2))
-    // Width of a hex is radius * sqrt(3), repeat as with y
-    .attr("x", d.x = (radius*Math.sqrt(3)*Math.round(d3.event.x / (radius*Math.sqrt(3))))-(radius/2));
+  var w = radius*Math.sqrt(3);
+  var h = radius*1.5;
+
+  function snapX(x, y) {
+    var offset = 0;
+    // When in odd row, add offset
+    if((snapY(x,y)/h)%2 === 1) {
+      offset += w*0.5;
+    }
+    return w*Math.round(x/w)+offset;
+  }
+  function snapY(x, y) {
+    var snappedY = h*Math.round(y/(h));
+    return snappedY;
+  }
+
+    d3.select(this)
+      .attr("x", d.x = snapX(d3.event.x, d3.event.y)-(box/2))
+      .attr("y", d.y = snapY(d3.event.x, d3.event.y)-(box/2));
 }
 
 function dragended(d) {
-  console.log("x: "+d.x+" | y: "+d.y);
   d3.select(this).classed("dragging", false);
 }
 
